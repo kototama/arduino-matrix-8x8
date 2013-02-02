@@ -12,7 +12,7 @@ const String display_chars = "0123456789ABCDEF";
 // up (because it's already getting +5V from the middle pin of the display)
 // therfore a 0 bit represents an active, lit-up segment
 
-#define NB_NUMBER 15
+#define NB_NUMBER 14
 
 const int sevenSeg[NB_NUMBER] = {
    0x01,
@@ -29,7 +29,6 @@ const int sevenSeg[NB_NUMBER] = {
    0x08,
    0x04,
    0x02,
-   0x01,
 };
   
 void setup() {
@@ -57,7 +56,7 @@ void loop() {
     
     Serial.println(whatToDisplay);
     // catch our breath before repeating
-    delay(500);
+    delay(200);
    }
 }
 
