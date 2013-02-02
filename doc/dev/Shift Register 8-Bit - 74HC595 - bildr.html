@@ -1,0 +1,588 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0062)http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595 -->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<meta name="generator" content="MediaWiki 1.18.1">
+<link rel="stylesheet" href="http://wiki.bildr.org/extensions/octopart/style/style.css">
+<link rel="shortcut icon" href="http://wiki.bildr.org/favicon.ico">
+<link rel="search" type="application/opensearchdescription+xml" href="http://wiki.bildr.org/opensearch_desc.php" title="bildr (en)">
+<link rel="EditURI" type="application/rsd+xml" href="http://wiki.bildr.org/api.php?action=rsd">
+<link rel="copyright" href="http://creativecommons.org/licenses/by-sa/3.0/">
+<link rel="alternate" type="application/atom+xml" title="bildr Atom feed" href="http://wiki.bildr.org/index.php?title=Special:RecentChanges&feed=atom">		<title>Shift Register 8-Bit - 74HC595 - bildr</title>
+		
+		<script type="text/javascript" async="" src="./Shift Register 8-Bit - 74HC595 - bildr_files/ga.js"></script><script src="./Shift Register 8-Bit - 74HC595 - bildr_files/moo_core.js" type="text/javascript"></script>
+		<script src="./Shift Register 8-Bit - 74HC595 - bildr_files/moo_more.js" type="text/javascript"></script>
+		<script src="./Shift Register 8-Bit - 74HC595 - bildr_files/common.js" type="text/javascript"></script>	
+		
+		
+		<script type="text/javascript">
+		
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-4050921-8']);
+		  _gaq.push(['_setDomainName', '.bildr.org']);
+		  _gaq.push(['_trackPageview']);
+		
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+		
+		</script>
+		
+		
+				
+		
+		
+		<script type="text/javascript">
+			window.addEvent('domready', function(){
+			
+				//hide TOC onload
+				if($('toc')){
+					$('toc').getElement('ul').hide();
+					changeText($('togglelink'), tocShowText);
+					document.cookie = "hidetoc=1";
+				}
+				
+				
+				$$('.hideExtra').addEvent('click', function(){
+					if(this.getNext('span')) this.getNext('span').toggle();
+				});
+			
+				var help = new Tips('.terminologydef', {
+					showDelay: 250,
+					fixed: true,
+					offset: {'x': 10, 'y': -25},
+					onHide: function(tip, hovered){ 
+						tip.fade('out');
+					}
+					
+				}).addEvent('show', function(tip, el){
+					tip.fade('show');
+				});
+				
+				
+				var SmoothScrolling = new Fx.SmoothScroll();
+				
+				//Toolbox is hidden on default so there is no "jump" before the javascript loads
+				$('toolBoxWrapper').show();
+				
+				var toolSlider = new Fx.Slide('toolbox', {
+					wrapper: 'toolBoxWrapper',
+					onComplete: function(){
+						var stateText = (this.open)? 'Close My ToolBox' : 'My ToolBox';
+						$('toogleToolbox').set('html', stateText);
+					}
+				}).hide();
+								
+				
+				$('toogleToolbox').addEvent('click', function(){
+					toolSlider.toggle();
+				});
+				
+				
+				//Add ability to add to the toolbox
+				if($('bildrWiki_addToToolbox')){
+					
+					$('bildrWiki_addToToolbox').addEvent('click', function(e){
+						e.stop();
+						
+						var bildrWiki_Curtain = new Element('div', {'id': 'bildrWiki_Curtain'}).inject($(document.body), 'top').fade('hide');
+						var bildrWiki_ToolboxWindow = new Element('div', {'id': 'bildrWiki_ToolboxWindow'}).inject($(document.body), 'top').fade('hide');
+						
+						var bildrWiki_ToolboxWindowBG = new Element('div', {'id': 'bildrWiki_ToolboxWindowBG'}).inject(bildrWiki_ToolboxWindow);
+						var bildrWiki_ToolboxWindowWrapper = new Element('div', {'id': 'bildrWiki_ToolboxWindowWrapper'}).inject(bildrWiki_ToolboxWindow);
+						var bildrWiki_ToolboxWindowClose = new Element('a', {'id': 'bildrWiki_ToolboxWindowClose'}).inject(bildrWiki_ToolboxWindow);
+						
+						bildrWiki_Curtain.fade('.3');
+						bildrWiki_ToolboxWindow.fade('in');
+						
+						
+						$$(bildrWiki_Curtain, bildrWiki_ToolboxWindowClose).addEvent('click', function(){
+							bildrWiki_Curtain.kill();
+							bildrWiki_ToolboxWindow.kill();
+						});
+						
+						var getForm = new Request({
+							url: '/bridge/toolbox/form.php',
+							onSuccess: function(txt){
+								bildrWiki_ToolboxWindowWrapper.set('html', txt);
+								
+									var toolboxForm = new Request.JSON({
+										url: '/bridge/toolbox/record.php',
+										
+										onRequest: function(txt){
+											$('toolboxSubmit').kill();
+										},	
+										
+										onSuccess: function(obj){
+											if(obj.added){
+												bildrWiki_ToolboxWindowWrapper.getElement('.wrapper').set('html', '<h2>Added!</h2>');
+												bildrWiki_Curtain.kill('1500');
+												bildrWiki_ToolboxWindow.kill('1500');
+											}else{
+												bildrWiki_ToolboxWindowWrapper.getElement('.wrapper').set('html', '<h2>Something happened... sorry</h2><p> '+obj.error+'</p>');
+											}
+										}		
+									});
+									
+									$('toolboxSubmit').addEvent('click', function(){
+										var article ="326";
+										var type = $('bildrBridge_typeSelect').get('value');
+										var comment = $('bildrBridge_toolboxComment').get('value');
+										toolboxForm.post({'options': {'action':'add', 'article': article, 'type': type, 'comment': comment}});	
+									});
+							}	
+						}).post();
+					});				
+				}
+			
+			});
+		
+		
+		
+		
+		</script>
+		
+		
+		<link rel="stylesheet" href="./Shift Register 8-Bit - 74HC595 - bildr_files/main.css" type="text/css" media="screen">
+		<link rel="stylesheet" href="./Shift Register 8-Bit - 74HC595 - bildr_files/common.css" type="text/css" media="screen">
+
+
+		<script>if(window.mw){
+	mw.config.set({"wgCanonicalNamespace": "", "wgCanonicalSpecialPageName": false, "wgNamespaceNumber": 0, "wgPageName": "Shift_Register_8-Bit_-_74HC595", "wgTitle": "Shift Register 8-Bit - 74HC595", "wgCurRevisionId": 7482, "wgArticleId": 326, "wgIsArticle": true, "wgAction": "view", "wgUserName": null, "wgUserGroups": ["*"], "wgCategories": ["Has Code", "Octopart", "Component", "IC\'s"], "wgBreakFrames": false, "wgRestrictionEdit": [], "wgRestrictionMove": [], "wgSearchNamespaces": [0, 14]});
+}
+</script>
+		<script type="text/javascript" src="./Shift Register 8-Bit - 74HC595 - bildr_files/wikibits.js"><!-- wikibits js --></script>
+		<!-- Head Scripts -->
+								<script type="text/javascript" src="./Shift Register 8-Bit - 74HC595 - bildr_files/index.php"><!-- site js --></script>
+							</head><style type="text/css"></style>
+		<body class="mediawiki ltr ns-0 ns-subject page-Shift_Register_8-Bit_-_74HC595 action-view skin-bildr">
+	
+	
+	<div id="bildrWikiWrapper">
+	
+	
+	<div id="headerWrapper">
+		
+		<div id="globalNavigationWrapper" class="wiki">
+			<ul id="globalNavigation">
+				<li><a href="http://bildr.org/">Home</a></li>
+				<li><a href="http://forum.bildr.org/">Forum</a></li>
+				<li>Wiki</li>
+				<li><a href="http://code.bildr.org/">Code</a></li>
+				<li class="toolBox"><a id="toogleToolbox" href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#">My ToolBox</a></li>
+			</ul>
+			
+			
+			<div id="toolBoxWrapper">
+				<div id="toolbox">
+					<script src="./Shift Register 8-Bit - 74HC595 - bildr_files/rendered.php" type="text/javascript"></script><ul><li><h2>Keeping track</h2></li></ul><ul><li><h2>Things I Own</h2></li></ul><ul><li><h2>Things I Want</h2></li></ul><ul><li><h2>For My Projects</h2></li></ul><ul><li><h2>Other Things</h2></li></ul>
+				</div>
+			</div>
+			
+			
+			<div class="bg"></div>		
+		</div>
+		
+		
+		
+		<div id="header">
+			<a id="mainLogo" class="wiki" href="http://wiki.bildr.org/index.php/"></a>
+			
+			<div id="headSearch">
+						<form action="http://wiki.bildr.org/index.php/Special:Search" id="searchform">
+			<input id="searchInput" name="search" type="text" array="" value=""><label class="overTxtLabel" style="line-height: normal; position: absolute; cursor: text; left: 4px; top: 2px;" for="searchInput">search wiki...</label>
+			<a id="searchChoices" data-searchtext="search wiki..." href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#"></a>
+			
+			
+			<div id="searchMenu">
+				<a class="wiki" href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#">Search Wiki</a>
+				<!-- <a class="code" href="#">Search Code</a> -->
+				<a class="forum" href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#">Search Forum</a>
+				<a class="blog" href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#">Search Blog</a>
+			</div>
+			
+					
+			<input type="submit" name="fulltext" class="searchButton" id="searchsubmit" value="Search" array="">
+		</form>
+					</div>
+			
+			<div id="user">
+				<a href="http://forum.bildr.org/ucp.php?mode=login" title="Login" accesskey="l">Login</a>
+			 / <a href="http://forum.bildr.org/ucp.php?mode=register">Register</a>			</div>
+			
+		</div>
+	</div>
+	
+	<div id="actionWrapper">
+		<div id="actionBar">
+			<ul id="actions">
+				
+				<li id="ca-nstab-main" class="selected"><a href="./Shift Register 8-Bit - 74HC595 - bildr_files/Shift Register 8-Bit - 74HC595 - bildr.html">Page</a></li>
+				<li id="ca-talk" class="new"><a href="http://wiki.bildr.org/index.php?title=Talk:Shift_Register_8-Bit_-_74HC595&action=edit&redlink=1">Discussion</a></li>
+				<li id="ca-viewsource"><a href="http://wiki.bildr.org/index.php?title=Shift_Register_8-Bit_-_74HC595&action=edit">View source</a></li>
+				<li id="ca-history"><a href="http://wiki.bildr.org/index.php?title=Shift_Register_8-Bit_-_74HC595&action=history">History</a></li>			
+			<li id="bildrWiki_addToToolbox"><a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#">Add to toolbox</a></li>			</ul>
+		</div>
+	</div>
+		
+	<div id="globalWrapper">
+		<div id="column-content">
+			<div id="content">
+				
+								<h1 id="firstHeading" class="firstHeading">
+					Shift Register 8-Bit - 74HC595					<div id="contentSub"></div>
+				</h1>
+				
+				
+				
+				<div id="bodyContent">
+					<h3 id="siteSub">From bildr</h3>
+															<div id="jump-to-nav">Jump to: <a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#column-one">navigation</a>, <a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#searchInput">search</a></div>					<!-- start content -->
+					<div lang="en" dir="ltr" class="mw-content-ltr"><style text="text/css" media="screen"><!-- .terminologydef {border-bottom: 1px dashed green;} --></style>
+
+
+
+<p><br></p>
+<div class="componentRight">
+<div class="thumb tright"><div class="thumbinner" style="width:202px;">
+<a href="http://wiki.bildr.org/index.php/File:Shift_Register_8Bit_74HC595.jpg" class="image"><img alt="Shift Register 8Bit 74HC595.jpg" src="./Shift Register 8-Bit - 74HC595 - bildr_files/200px-Shift_Register_8Bit_74HC595.jpg" width="200" height="200" class="thumbimage"></a>  <div class="thumbcaption"><div class="magnify"><a href="http://wiki.bildr.org/index.php/File:Shift_Register_8Bit_74HC595.jpg" class="internal" title="Enlarge"><img src="./Shift Register 8-Bit - 74HC595 - bildr_files/magnify-clip.png" width="15" height="11" alt=""></a></div></div>
+</div></div>
+<ul>
+<li>Manufacturer: TI
+</li>
+<li>
+<a href="http://wiki.bildr.org/index.php/Voltage" title="Voltage">Voltage</a>: +2 to +6 V
+</li>
+<li>
+<a rel="nofollow" class="external text" href="http://wiki.bildr.org/images/1/1d/SN74HC595.pdf">Doc Sheet</a>
+</li>
+</ul>
+<p><script src="./Shift Register 8-Bit - 74HC595 - bildr_files/326.js"></script><link rel="stylesheet" href="http://bildr.org/bridge/tags/includes/style/style.css"></p><div id="bildrBridge_tagWrapper"><div id="bildrBridge_head"><span id="bildrBridge_tagTitle">Tags</span></div><div id="bildrBridge_tagSearchWrapper"></div><div id="bildrBridge_tags"><a href="http://wiki.bildr.org/index.php/Special:TagSearch/102" class="tag"><span class="action"></span><span class="name">Ic</span></a><a href="http://wiki.bildr.org/index.php/Special:TagSearch/113" class="tag"><span class="action"></span><span class="name">Shift Register</span></a></div><div id="bildrBridge_tagActionShield"></div><input type="hidden" id="bildrBridge_tagsTitleVlaue" value="326"></div><p></p>
+</div>
+<div class="componentLeft">
+<div id="componentOverview">The <a href="http://wiki.bildr.org/index.php/74HC595" title="74HC595" class="mw-redirect">74HC595</a> is a simple 8-bit <a href="http://wiki.bildr.org/index.php/Shift_register" title="Shift register">shift register</a> <a href="http://wiki.bildr.org/index.php/IC" title="IC" class="mw-redirect">IC</a>. <a href="http://wiki.bildr.org/index.php/Clock" title="Clock">Clock</a> in data and <a href="http://wiki.bildr.org/index.php?title=Latch&action=edit&redlink=1" class="new" title="Latch (page does not exist)">latch</a> it to free up <a href="http://wiki.bildr.org/index.php?title=IO_pins&action=edit&redlink=1" class="new" title="IO pins (page does not exist)">IO pins</a> on your micro.  Its output allows you to daisy-chain multiple chips together without requiring additional inputs from the microcontroller.
+Essentially, data is clocked in bit by bit, with <span class="texhtml"><i>Q</i><sub><i>A</i></sub></span> taking the value of each input bit (either HIGH or LOW).  Every time <span class="texhtml"><i>Q</i><sub><i>A</i></sub></span> takes on a new input value, it first passes on its previous value to <span class="texhtml"><i>Q</i><sub><i>B</i></sub></span>, which passes its previous value to <span class="texhtml"><i>Q</i><sub><i>C</i></sub></span>, etc.  The value in  <span class="texhtml"><i>Q</i><sub><i>H</i></sub></span> is discarded, unless the output pin (<span class="texhtml"><i>Q</i><sub><i>H'</i></sub></span>) is utilized, in which case, it is passed on to a daisy-chained register.</div>
+<div id="componentHookingUp">
+<table id="toc" class="toc"><tbody><tr><td>
+<div id="toctitle"><h2>Contents</h2></div>
+<ul style="display: none;">
+<li class="toclevel-1"><a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#Hooking_it_up"><span class="tocnumber">1</span> <span class="toctext">Hooking it up</span></a></li>
+<li class="toclevel-1"><a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#Code"><span class="tocnumber">2</span> <span class="toctext">Code</span></a></li>
+<li class="toclevel-1"><a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#Availability"><span class="tocnumber">3</span> <span class="toctext">Availability</span></a></li>
+<li class="toclevel-1"><a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#Modules_using_this_component"><span class="tocnumber">4</span> <span class="toctext">Modules using this component</span></a></li>
+<li class="toclevel-1"><a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#External_Links"><span class="tocnumber">5</span> <span class="toctext">External Links</span></a></li>
+<li class="toclevel-1"><a href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#References"><span class="tocnumber">6</span> <span class="toctext">References</span></a></li>
+</ul>
+</td></tr></tbody></table>
+<h2> <span class="mw-headline" id="Hooking_it_up"> Hooking it up  </span>
+</h2>
+<div class="thumb tright"><div class="thumbinner" style="width:202px;">
+<a href="http://wiki.bildr.org/index.php/File:SN74HC595-pinout.png" class="image"><img alt="SN74HC595-pinout.png" src="./Shift Register 8-Bit - 74HC595 - bildr_files/200px-SN74HC595-pinout.png" width="200" height="209" class="thumbimage"></a>  <div class="thumbcaption"><div class="magnify"><a href="http://wiki.bildr.org/index.php/File:SN74HC595-pinout.png" class="internal" title="Enlarge"><img src="./Shift Register 8-Bit - 74HC595 - bildr_files/magnify-clip.png" width="15" height="11" alt=""></a></div></div>
+</div></div>
+<ul><li>Pins
+<ul>
+<li> <a href="http://wiki.bildr.org/index.php/VCC" title="VCC"><span><span title="VCC: Positive" class="terminologydef" style="cursor:help">VCC</span></span></a> - input voltage (+2 to +6 V)
+</li>
+<li> <a href="http://wiki.bildr.org/index.php/GND" title="GND" class="mw-redirect"><span><span title="GND: Ground" class="terminologydef" style="cursor:help">GND</span></span></a> - ground
+</li>
+<li> <span class="texhtml"><i>Q</i><sub><i>A</i></sub>, <i>Q</i><sub><i>B</i></sub>, ... <i>Q</i><sub><i>H</i></sub></span> - 8 outputs
+</li>
+<li> <a href="http://wiki.bildr.org/index.php?title=SER&action=edit&redlink=1" class="new" title="SER (page does not exist)">SER</a> - serial input, hooks up to the serial output of your microcontroller
+</li>
+<li> <a href="http://wiki.bildr.org/index.php?title=OE&action=edit&redlink=1" class="new" title="OE (page does not exist)">OE</a> - output enable (when high, outputs are in high impedance state)
+</li>
+<li> <a href="http://wiki.bildr.org/index.php?title=SRCLK&action=edit&redlink=1" class="new" title="SRCLK (page does not exist)">SRCLK</a> - shift register clock (positive edge triggered); it times the input to SER
+</li>
+<li> <a href="http://wiki.bildr.org/index.php?title=SRCLR&action=edit&redlink=1" class="new" title="SRCLR (page does not exist)">SRCLR</a> - overriding clear input (low state to clear register)
+</li>
+<li> <a href="http://wiki.bildr.org/index.php?title=RCLK&action=edit&redlink=1" class="new" title="RCLK (page does not exist)">RCLK</a> - storage register clock (positive edge triggered); it is used to latch the register to the outputs
+</li>
+<li> <span class="texhtml"><i>Q</i><sub><i>H'</i></sub></span> - output for communication to pass bytes on to additional chips
+</li>
+</ul>
+</li></ul>
+Unless there is a need to use additional digital pins to control output enable or shift register clear, connect OE to ground and SRCLR to +5V for normal operation.</div>
+<div id="componentCode">		
+<h2> <span class="mw-headline" id="Code"> Code  </span>
+</h2>
+<p>	<script type="text/javascript"> console.log(" Single 7-Segment Display  | /{{{2}}} | /{{{3}}}"); </script><script src="./Shift Register 8-Bit - 74HC595 - bildr_files/Single 7-Segment Display .js"></script><link rel="stylesheet" href="http://code.bildr.org/includes/style/rendered.css"><link rel="stylesheet" href="http://code.bildr.org/includes/style/geshi.css"></p><div class="bildrCode_projectWrapper test" id="bildrCode_projectWrapper_84"><div class="bildrCode_projectHeader"><span class="bildrCode_projectTitle"><a href="http://code.bildr.org/project/Single%207-Segment%20Display"> Single 7-Segment Display </a><span class="bildrCode_expand"></span></span></div><div class="bildrCode_module"><div class="bildrCode_moduleSideBar" id="bildrCode_moduleSideBar_84"><div class="bildrCode_moduleBody selected"><span id="bildrCode_moduleFileBar147" class="bildrCode_moduleHead"><span class="folder"></span><span class="text">Arduino</span><a class="wikisideMenuDownloadButton" title="download code" href="http://code.bildr.org/download/625.zip">download</a></span><div class="bildrCode_moduleFileBarTest" style="padding-top: 0px; border-top-style: none; padding-bottom: 0px; border-bottom-style: none; overflow: hidden; visibility: visible; zoom: 1; opacity: 1; height: 67px;"><span class="shadow"></span><li class="sub1 file selected"><a class="genericFile" rel="3406" href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#">License.txt</a></li><li class="sub1 file"><a class="genericFile" rel="3405" href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#">Read_Me.txt</a></li><li class="sub1 file"><a class="genericFile" rel="3407" href="http://wiki.bildr.org/index.php/Shift_Register_8-Bit_-_74HC595#">singledigit.pde</a></li></div></div></div><div class="bildrCode_moduleCode" id="bildrCode_moduleCode_84"><div class="bildrCode_codeWrapper"><div class="bildrCode_fileWrapper" id="bildrCode_3406"><p class="bildrCode_fileHead"><span class="shadow"></span>License.txt - Text</p> <div class="bildrCode_fileCodeWrapper"><div class="bildrCode_lineNumbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br></div><div class="bildrCode_code"><code>Copyright (c) 2010 bildr community<br><br>Permission is hereby granted, free of charge, to any person obtaining a copy<br>of this software and associated documentation files (the "Software"), to deal<br>in the Software without restriction, including without limitation the rights<br>to use, copy, modify, merge, publish, distribute, sublicense, and/or sell<br>copies of the Software, and to permit persons to whom the Software is<br>furnished to do so, subject to the following conditions:<br><br>The above copyright notice and this permission notice shall be included in<br>all copies or substantial portions of the Software.<br><br>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR<br>IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,<br>FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE<br>AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER<br>LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,<br>OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN<br>THE SOFTWARE.</code></div></div></div><div class="bildrCode_fileWrapper" id="bildrCode_3405"><p class="bildrCode_fileHead"><span class="shadow"></span>Read_Me.txt - Text</p> <div class="bildrCode_fileCodeWrapper"><div class="bildrCode_lineNumbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br></div><div class="bildrCode_code"><code></code></div></div></div><div class="bildrCode_fileWrapper" id="bildrCode_3407"><p class="bildrCode_fileHead"><span class="shadow"></span>singledigit.pde - Arduino</p> <div class="bildrCode_fileCodeWrapper"><div class="bildrCode_lineNumbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10<br>11<br>12<br>13<br>14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22<br>23<br>24<br>25<br>26<br>27<br>28<br>29<br>30<br>31<br>32<br>33<br>34<br>35<br>36<br>37<br>38<br>39<br>40<br>41<br>42<br>43<br>44<br>45<br>46<br>47<br>48<br>49<br>50<br>51<br>52<br>53<br>54<br>55<br>56<br>57<br>58<br>59<br>60<br>61<br>62<br>63<br>64<br>65<br>66<br>67<br>68<br>69<br>70<br>71<br>72<br>73<br>74<br>75<br>76<br>77<br>78<br>79<br>80<br>81<br>82<br>83<br>84<br>85<br>86<br>87<br>88<br>89<br>90<br>91<br>92<br>93<br>94<br></div><div class="bildrCode_code"><code><span class="co1">//****************************************************************</span><br><span class="co1">//</span><br><span class="co1">// Code to demonstrate using an Arduino and 74HC595 to control</span><br><span class="co1">// a 7-segment LED</span><br><span class="co1">//</span><br><span class="co1">// Datasheets available from:</span><br><span class="co1">//  http://www.sparkfun.com/datasheets/Components/YSD-160AR4B-8.pdf</span><br><span class="co1">//  http://www.sparkfun.com/datasheets/IC/SN74HC595.pdf</span><br><span class="co1">//</span><br><span class="co1">// Written By:</span><br><span class="co1">//  K-MOB</span><br><span class="co1">//  for Bildr</span><br><span class="co1">//  10/2/2010</span><br><span class="co1">//</span><br><span class="co1">//****************************************************************</span><br><span class="coMULTI">/*<br><br> ___F___<br> |   |<br>G |   | E<br> | H |<br> -------<br> |   |<br>A |   | C<br> |   |<br> ------- . D<br>  B<br>  <br>Binary display out, bit by bit:<br>ABCD EFGH<br>*/</span><br><br><span class="co1">// Pin connected to RCLK -- storage register clock pin (latch pin) -- of 74HC595</span><br><span class="kw4">const</span> <span class="kw4">int</span> RCLKPin <span class="sy0">=</span> <span class="nu0">3</span><span class="sy0">;</span><br><span class="co1">// Pin connected to SRCLK -- shift register clock pin -- of 74HC595</span><br><span class="kw4">const</span> <span class="kw4">int</span> SRCLKPin <span class="sy0">=</span> <span class="nu0">7</span><span class="sy0">;</span><br><span class="co1">// Pin connected to SER -- serial data input -- of 74HC595</span><br><span class="kw4">const</span> <span class="kw4">int</span> SERPin <span class="sy0">=</span> <span class="nu0">6</span><span class="sy0">;</span><br><br><span class="kw4">const</span> String display_chars <span class="sy0">=</span> <span class="st0">"0123456789ABCDEF"</span><span class="sy0">;</span><br><br><span class="co1">// note that setting a pin to low makes its respective LED segment light</span><br><span class="co1">// up (because it's already getting +5V from the middle pin of the display)</span><br><span class="co1">// therfore a 0 bit represents an active, lit-up segment</span><br><span class="kw4">const</span> <span class="kw4">int</span> sevenSeg<span class="br0">[</span><span class="nu0">16</span><span class="br0">]</span> <span class="sy0">=</span> <span class="br0">{</span><br> <span class="nu12">0x11</span><span class="sy0">,</span> <span class="co1">// 0 dec 0001 0001 bin</span><br> <span class="nu12">0xD7</span><span class="sy0">,</span> <span class="co1">// 1 dec 1101 0111 bin</span><br> <span class="nu12">0x32</span><span class="sy0">,</span> <span class="co1">// 2 dec 0011 0010 bin</span><br> <span class="nu12">0x92</span><span class="sy0">,</span> <span class="co1">// 3 dec 1001 0010 bin</span><br> <span class="nu12">0xD4</span><span class="sy0">,</span> <span class="co1">// 4 dec 1101 0100 bin</span><br> <span class="nu12">0x98</span><span class="sy0">,</span> <span class="co1">// 5 dec 1001 1000 bin</span><br> <span class="nu12">0x18</span><span class="sy0">,</span> <span class="co1">// 6 dec 0001 1000 bin</span><br> <span class="nu12">0xD3</span><span class="sy0">,</span> <span class="co1">// 7 dec 1101 0011 bin</span><br> <span class="nu12">0x10</span><span class="sy0">,</span> <span class="co1">// 8 dec 0001 0000 bin</span><br> <span class="nu12">0x90</span><span class="sy0">,</span> <span class="co1">// 9 dec 1001 0000 bin</span><br> <span class="nu12">0x50</span><span class="sy0">,</span> <span class="co1">// "A" dec 0101 0000 bin</span><br> <span class="nu12">0x1C</span><span class="sy0">,</span> <span class="co1">// "b" dec 0001 1100 bin</span><br> <span class="nu12">0x39</span><span class="sy0">,</span> <span class="co1">// "C" dec 0011 1001 bin</span><br> <span class="nu12">0x16</span><span class="sy0">,</span> <span class="co1">// "d" dec 0001 0110 bin</span><br> <span class="nu12">0x38</span><span class="sy0">,</span> <span class="co1">// "E" dec 0011 1000 bin</span><br> <span class="nu12">0x78</span> <span class="co1">// "F" dec 0111 1000 bin</span><br><span class="br0">}</span><span class="sy0">;</span><br> <br><span class="kw4">void</span> setup<span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span><br><br> <span class="co1">// set pins to output so you can control the shift register</span><br> <span class="kw3">pinMode</span><span class="br0">(</span>RCLKPin<span class="sy0">,</span> <span class="kw2">OUTPUT</span><span class="br0">)</span><span class="sy0">;</span><br> <span class="kw3">pinMode</span><span class="br0">(</span>SRCLKPin<span class="sy0">,</span> <span class="kw2">OUTPUT</span><span class="br0">)</span><span class="sy0">;</span><br> <span class="kw3">pinMode</span><span class="br0">(</span>SERPin<span class="sy0">,</span> <span class="kw2">OUTPUT</span><span class="br0">)</span><span class="sy0">;</span><br><br><span class="br0">}</span><br><br><span class="kw4">void</span> loop<span class="br0">(</span><span class="br0">)</span> <span class="br0">{</span><br><br><span class="kw1">for</span> <span class="br0">(</span><span class="kw4">int</span> whatToDisplay <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span> whatToDisplay <span class="sy0">&lt;</span> <span class="nu0">16</span><span class="sy0">;</span> whatToDisplay<span class="sy0">++</span><span class="br0">)</span> <span class="br0">{</span><br><br>  <span class="co1">// set RCLK low; wait till we transmit the byte, and they moving it high will output the data</span><br>  <span class="kw3">digitalWrite</span><span class="br0">(</span>RCLKPin<span class="sy0">,</span> <span class="kw2">LOW</span><span class="br0">)</span><span class="sy0">;</span><br><br>  <span class="co1">// shift out the bits (MSBFIRST = most significant bit first)</span><br>  <span class="kw3">shiftOut</span><span class="br0">(</span>SERPin<span class="sy0">,</span> SRCLKPin<span class="sy0">,</span> MSBFIRST<span class="sy0">,</span> charByte<span class="br0">(</span>display_chars<span class="br0">[</span>whatToDisplay<span class="br0">]</span><span class="br0">)</span><span class="br0">)</span><span class="sy0">;</span><br><br>  <span class="co1">// send shift register data to the storage register</span><br>  <span class="kw3">digitalWrite</span><span class="br0">(</span>RCLKPin<span class="sy0">,</span> <span class="kw2">HIGH</span><span class="br0">)</span><span class="sy0">;</span><br>  <br>  <span class="co1">// catch our breath before repeating</span><br>  <span class="kw3">delay</span><span class="br0">(</span>1000<span class="br0">)</span><span class="sy0">;</span><br> <span class="br0">}</span><br><span class="br0">}</span><br><br><span class="kw4">int</span> charByte<span class="br0">(</span><span class="kw4">char</span> charToDisplay<span class="br0">)</span> <span class="br0">{</span><br> <span class="kw1">return</span> sevenSeg<span class="br0">[</span>display_chars.<span class="me1">indexOf</span><span class="br0">(</span>charToDisplay<span class="br0">)</span><span class="br0">]</span><span class="sy0">;</span><br><span class="br0">}</span></code></div></div></div></div></div></div><div class="bildrCode_footer"></div></div><p></p>
+</div>
+<div id="componentAvailability">
+<h2> <span class="mw-headline" id="Availability">Availability</span>
+</h2>
+<ul><li>
+<a rel="nofollow" class="external text" href="http://www.sparkfun.com/commerce/product_info.php?products_id=733">Sparkfun</a>
+</li></ul>
+<p><br></p>
+	<div id="octopart">
+		<div id="octopart_header">
+<p>			<span class="octopart_title">MM74HC595N</span>
+			<a href="http://datasheet.octopart.com/MM74HC595N-Fairchild-datasheet-12735.pdf" class="octopart_datasheet">Datasheet</a>
+</p>
+		</div>
+		<div id="octopart_body">
+			<p>
+				<a class="octopart_supplier" href="http://www.element14.com/">element14 APAC</a>
+				<span class="octopart_available"><span class="quanity">160</span> in stock</span>
+				
+				<span class="octopart_price"> $0.79</span>
+				
+				<a class="octopart_buy" href="http://octopart-clicks.com/click/vptrack?ak=fb3c91b2&vpid=38220997">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://www.digikey.com/">Digi-Key</a>
+				<span class="octopart_available"><span class="quanity">0</span> in stock</span>
+				
+				<span class="octopart_price"> $0.66</span>
+				
+				<a class="octopart_buy" href="http://octopart-clicks.com/click/vptrack?ak=fb3c91b2&vpid=2027185">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://www.arrownac.com/">Arrow</a>
+				<span class="octopart_available"><span class="quanity">0</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="http://octopart-clicks.com/click/vptrack?ak=fb3c91b2&vpid=14697554">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://bristolelectronics.com/">Bristol Electronics</a>
+				<span class="octopart_available"><span class="quanity">57</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="http://octopart-clicks.com/click/vptrack?ak=fb3c91b2&vpid=64023563">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://www.eurotech.co.uk/">Euro-Tech</a>
+				<span class="octopart_available"><span class="quanity">25</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://componentsense.com/">Component Sense 24</a>
+				<span class="octopart_available"><span class="quanity">17</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://smtcorp.com/">SMT Corp</a>
+				<span class="octopart_available"><span class="quanity">23</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://www.asapsemi.com/">ASAP Semiconductor</a>
+				<span class="octopart_available"><span class="quanity">-4</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://directics.com/">Direct Components</a>
+				<span class="octopart_available"><span class="quanity">-4</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://componentsmax.com/">ComponentsMAX</a>
+				<span class="octopart_available"><span class="quanity">-4</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://www.nexxoncircuits.com/">Nexxon Circuits</a>
+				<span class="octopart_available"><span class="quanity">-4</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://www.iconsemiconductors.com/">Icon Semiconductors</a>
+				<span class="octopart_available"><span class="quanity">-4</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://www.summitelectronics.com/">Summit Electronics</a>
+				<span class="octopart_available"><span class="quanity">-4</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://www.sierraic.com/">Sierra IC</a>
+				<span class="octopart_available"><span class="quanity">-4</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+			<p>
+				<a class="octopart_supplier" href="http://netsemi.com/">Net Semi</a>
+				<span class="octopart_available"><span class="quanity">-4</span> in stock</span>
+				
+				<span class="octopart_price"> $0.00</span>
+				
+				<a class="octopart_buy" href="">Buy Now!</a>
+			</p>
+		</div>
+		<div id="octopart_footer">
+<p>			Powered by <a id="octopart_logo" href="http://www.octopart.com/">Octopart</a>
+</p>
+		</div>
+	</div>
+</div>
+<div class="modulesUsing">
+<h2> <span class="mw-headline" id="Modules_using_this_component">Modules using this component</span>
+</h2>
+ <ul><li><a href="http://wiki.bildr.org/index.php/Controlling_7-Segment_LED_Display_(74HC595)" title="Controlling 7-Segment LED Display (74HC595)"><span>Controlling 7-Segment <span title="LED: Light Emitting Diode" class="terminologydef" style="cursor:help">LED</span> Display (74HC595)</span></a></li></ul>
+</div>
+<div id="componentLinks">
+<h2> <span class="mw-headline" id="External_Links">External Links</span>
+</h2>
+<ul>
+<li> <a rel="nofollow" class="external text" href="http://www.arduino.cc/en/Tutorial/ShiftOut">Hookup and Code for Arduino - Arduino Site</a>
+</li>
+<li> <a rel="nofollow" class="external text" href="http://www.radiolocman.com/shem/schematics.html?di=65110"><span>Controlling 16 <span title="LED: Light Emitting Diode" class="terminologydef" style="cursor:help">LEDs</span></span></a>
+</li>
+</ul>
+</div>
+
+<div id="componentRefrences">
+<h2> <span class="mw-headline" id="References">References</span>
+</h2>
+<ul>
+<li> <a rel="nofollow" class="external free" href="http://www.sparkfun.com/commerce/product_info.php?products_id=733">http://www.sparkfun.com/commerce/product_info.php?products_id=733</a>
+</li>
+<li> <a rel="nofollow" class="external text" href="http://www.sparkfun.com/datasheets/IC/SN74HC595.pdf">Datasheet</a>
+</li>
+</ul>
+</div>
+
+</div>
+<div class="bildrElementDefinition component">
+<p><span class="what">
+This page is a <a href="http://wiki.bildr.org/index.php/Category:Component" title="Category:Component">Component</a> on bildr.
+</span>
+<span class="definition">
+Components are pages about specific parts, and include connection details and code when available. 
+</span>
+</p>
+</div>
+
+
+
+<!-- 
+NewPP limit report
+Preprocessor node count: 142/1000000
+Post-expand include size: 6883/2097152 bytes
+Template argument size: 4913/2097152 bytes
+Expensive parser function count: 1/100
+-->
+</div><div class="printfooter">
+Retrieved from "<a href="http://wiki.bildr.org/index.php?title=Shift_Register_8-Bit_-_74HC595&oldid=7482">http://wiki.bildr.org/index.php?title=Shift_Register_8-Bit_-_74HC595&amp;oldid=7482</a>"</div>
+					<div id="catlinks" class="catlinks"><div id="mw-normal-catlinks"><a href="http://wiki.bildr.org/index.php/Special:Categories" title="Special:Categories">Categories</a>: <ul><li><a href="http://wiki.bildr.org/index.php/Category:Has_Code" title="Category:Has Code">Has Code</a></li><li><a href="http://wiki.bildr.org/index.php/Category:Octopart" title="Category:Octopart">Octopart</a></li><li><a href="http://wiki.bildr.org/index.php/Category:Component" title="Category:Component">Component</a></li><li><a href="http://wiki.bildr.org/index.php/Category:IC%27s" title="Category:IC&#39;s">IC's</a></li></ul></div></div>					<!-- end content -->
+									
+				</div>
+			</div>
+	
+				
+		</div>
+		
+		<div id="componentDisclaimer">
+			<p><b>NOTE</b>: All information contained within this article is pure opinion. Although this article is intended to help people, it may contain faulty or misleading information. This article is not to be considered professional opinion or advice, and is in no way a replacement for reading all safety/instructional documentation. Always remember to protect yourself when handling/using hazardous materials, as well as test new techniques before using them on projects/work intended to be handed in or used. 	</p>
+			<p><b>bildr and its contributers take NO responsibility for the information contained within.</b></p>
+		</div>
+		
+		
+	</div>	
+	
+	
+		
+		
+	<div id="footerWrapper">
+	<div id="footerLine"></div>	
+		<div id="footer">
+			<div id="footerLinks">
+				
+				<div id="footer1">
+					<h1>go to</h1>
+					<ul><li><a href="http://wiki.bildr.org/index.php/Main_Page">Main page</a></li><li><a href="http://wiki.bildr.org/index.php/Special:RecentChanges">Recent changes</a></li><li><a href="http://wiki.bildr.org/index.php/Special:Random">Random page</a></li><li><a href="http://wiki.bildr.org/index.php/Special:NewFiles">Newest images</a></li></ul>					
+				</div>
+				
+				<div id="footer2">
+					<h1>tools</h1>
+								<ul>
+				<li id="t-whatlinkshere"><a href="http://wiki.bildr.org/index.php/Special:WhatLinksHere/Shift_Register_8-Bit_-_74HC595" array="">What links here</a></li>
+				<li id="t-recentchangeslinked"><a href="http://wiki.bildr.org/index.php/Special:RecentChangesLinked/Shift_Register_8-Bit_-_74HC595" array="">Related changes</a></li>
+<li id="t-specialpages"><a href="http://wiki.bildr.org/index.php/Special:SpecialPages" array="">Special pages</a></li>
+				<li id="t-print"><a href="http://wiki.bildr.org/index.php?title=Shift_Register_8-Bit_-_74HC595&printable=yes" array="">Printable version</a></li>				<li id="t-permalink"><a href="http://wiki.bildr.org/index.php?title=Shift_Register_8-Bit_-_74HC595&oldid=7482" array="">Permanent link</a></li>			</ul>
+				</div>
+				
+				
+				<div id="footer3">
+					<h1>user</h1>
+					<ul><li id="pt-login"><a href="http://wiki.bildr.org/index.php?title=Special:UserLogin&returnto=Shift+Register+8-Bit+-+74HC595">Log in</a></li></ul>				</div>
+				
+				
+				<div id="footer4">
+					<h1>about</h1>
+								<ul id="f-list">
+										
+							<li id="viewcount">Viewed: 4,342 times</li> <li id="lastmod">
+								Last modified: <br>
+								Oct 2nd 10 7:53pm
+							</li>						
+							<li id="copyright">Content available under: 
+<br><a class="external" href="http://creativecommons.org/licenses/by-sa/3.0/">Attribution-Share Alike 3.0 Unported</a></li> 						
+							<li id="privacy"><a href="http://wiki.bildr.org/index.php/bildr:Privacy_policy" title="bildr:Privacy policy">Privacy policy</a></li> 						
+							<li id="about"><a href="http://wiki.bildr.org/index.php/bildr:About" title="bildr:About">About bildr</a></li> 						
+							<li id="disclaimer"><a href="http://wiki.bildr.org/index.php/bildr:General_disclaimer" title="bildr:General disclaimer">Disclaimers</a></li> 			</ul>
+								
+				</div>
+				
+				<div class="clearDiv"></div>
+			
+				
+			</div>
+			
+		</div>
+	<div id="footerGrad"></div>
+	</div>
+	
+	
+	</div>
+	
+	
+	<script>if(window.mw){
+	mw.loader.load(["mediawiki.user", "mediawiki.util", "mediawiki.page.ready", "mediawiki.legacy.wikibits", "mediawiki.legacy.ajax", "mediawiki.legacy.mwsuggest"]);
+}
+</script>
+<script src="./Shift Register 8-Bit - 74HC595 - bildr_files/load.php"></script>
+<script>if(window.mw){
+	mw.user.options.set({"ccmeonemails":0,"cols":80,"date":"","diffonly":0,"disablemail":0,"disablesuggest":0,"editfont":"default","editondblclick":0,"editsection":1,"editsectiononrightclick":0,"enotifminoredits":0,"enotifrevealaddr":0,"enotifusertalkpages":1,"enotifwatchlistpages":0,"extendwatchlist":0,"externaldiff":0,"externaleditor":0,"fancysig":0,"forceeditsummary":0,"gender":"unknown","hideminor":0,"hidepatrolled":0,"highlightbroken":1,"imagesize":2,"justify":0,"math":1,"minordefault":0,"newpageshidepatrolled":0,"nocache":0,"noconvertlink":0,"norollbackdiff":0,"numberheadings":0,"previewonfirst":0,"previewontop":1,"quickbar":5,"rcdays":7,"rclimit":50,"rememberpassword":0,"rows":25,"searchlimit":20,"showhiddencats":0,"showjumplinks":1,"shownumberswatching":1,"showtoc":1,"showtoolbar":1,"skin":"bildr","stubthreshold":0,"thumbsize":2,"underline":2,"uselivepreview":0,"usenewrc":1,"watchcreations":0,"watchdefault":0,"watchdeletion":0,"watchlistdays":3,"watchlisthideanons":0,
+	"watchlisthidebots":0,"watchlisthideliu":0,"watchlisthideminor":0,"watchlisthideown":0,"watchlisthidepatrolled":0,"watchmoves":0,"wllimit":250,"variant":"en","language":"en","searchNs0":true,"searchNs1":false,"searchNs2":false,"searchNs3":false,"searchNs4":false,"searchNs5":false,"searchNs6":false,"searchNs7":false,"searchNs8":false,"searchNs9":false,"searchNs10":false,"searchNs11":false,"searchNs12":false,"searchNs13":false,"searchNs14":true,"searchNs15":false});;mw.user.tokens.set({"editToken":"+\\","watchToken":false});;mw.loader.state({"user.options":"ready","user.tokens":"ready"});
+	
+	/* cache key: bildr_wiki-mw_:resourceloader:filter:minify-js:4:e3d874a2db53aa235d9ba764e94b5193 */
+}
+</script>	<!-- Served in 1.472 secs. -->	
+
+<div style="display: none;" id="hiddenlpsubmitdiv"></div><script>try{for(var lastpass_iter=0; lastpass_iter < document.forms.length; lastpass_iter++){ var lastpass_f = document.forms[lastpass_iter]; if(typeof(lastpass_f.lpsubmitorig2)=="undefined"){ lastpass_f.lpsubmitorig2 = lastpass_f.submit; lastpass_f.submit = function(){ var form=this; var customEvent = document.createEvent("Event"); customEvent.initEvent("lpCustomEvent", true, true); var d = document.getElementById("hiddenlpsubmitdiv"); for(var i = 0; i < document.forms.length; i++){ if(document.forms[i]==form){ d.innerText=i; } } d.dispatchEvent(customEvent); form.lpsubmitorig2(); } } }}catch(e){}</script></body></html>

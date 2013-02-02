@@ -1,0 +1,4 @@
+
+document.write('<link rel="stylesheet" href="http://bildr.org/bridge/tags/includes/style/style.css"/>');
+document.write('<div id=\"bildrBridge_tagWrapper\"><div id=\"bildrBridge_head\"><span id=\"bildrBridge_tagTitle\">Tags</span></div><div id=\"bildrBridge_tagSearchWrapper\"></div><div id=\"bildrBridge_tags\"><a href=\"http://wiki.bildr.org/index.php/Special:TagSearch/102\" class=\"tag\"><span class=\"action\"></span><span class=\"name\">Ic</span></a><a href=\"http://wiki.bildr.org/index.php/Special:TagSearch/113\" class=\"tag\"><span class=\"action\"></span><span class=\"name\">Shift Register</span></a></div><div id=\"bildrBridge_tagActionShield\"></div><input type=\"hidden\" id=\"bildrBridge_tagsTitleVlaue\" value=\"326\" /></div>');
+	
