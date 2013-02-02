@@ -1,0 +1,8 @@
+TODO:
+
+ShiftIn register
+http://arduino.cc/forum/index.php?PHPSESSID=0df31329948400acca07515092bab921&topic=103087.0
+http://www.arduino.cc/en/Tutorial/ShiftIn
+
+CD4021
+PCF8574
