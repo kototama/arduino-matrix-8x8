@@ -6,3 +6,7 @@ http://www.arduino.cc/en/Tutorial/ShiftIn
 
 CD4021
 PCF8574
+
+ULN2803
+http://www.instructables.com/id/LED-Etch-a-Sketch-Full-Instructable/?ALLSTEPS
+http://dduino.blogspot.de/2012/03/arduino-uln2803.html
