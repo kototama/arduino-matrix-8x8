@@ -1,10 +1,13 @@
 
+
 // Pin connected to RCLK -- storage register clock pin (latch pin) -- of 74HC595
 const int RCLKPin = 3;
 // Pin connected to SRCLK -- shift register clock pin -- of 74HC595
-const int SRCLKPin = 7;
+// const int SRCLKPin = 7;
+const int SRCLKPin = 2;
 // Pin connected to SER -- serial data input -- of 74HC595
-const int SERPin = 6;
+// const int SERPin = 6;
+const int SERPin = 4;
 
 const String display_chars = "0123456789ABCDEF";
 
