@@ -36,7 +36,7 @@ void setup() {
 
 void loop() {
     for(int i = 0; i < 8; i++) {
-        matrix_select_line(i);
+        matrix_display_dot(i, i);
         delay(200);
     }
 }
