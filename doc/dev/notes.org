@@ -1,4 +1,8 @@
-TODO:
+SPI:
+http://www.jeremyblum.com/2011/02/20/arduino-tutorial-8-spi-interfaces/
+
+Example 74HC595:
+http://learn.adafruit.com/adafruit-arduino-lesson-4-eight-leds/breadboard-layout
 
 ShiftIn register
 http://arduino.cc/forum/index.php?PHPSESSID=0df31329948400acca07515092bab921&topic=103087.0
