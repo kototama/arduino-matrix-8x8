@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include "pic.h"
-#include "matrix.h"
+#include "matrix2.h"
 
 void pic_display(pic_t pic)
 {
@@ -12,8 +12,7 @@ void pic_display(pic_t pic)
         column = i % 8;
 
         if(pic & (0x8000000000000000 >> i)) {
-            matrix_display_dot(line, column);
-            delay(100);
+            matrix2_display_dot(line, column);
         }
     }
 }
