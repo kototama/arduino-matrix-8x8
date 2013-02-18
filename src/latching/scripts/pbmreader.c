@@ -19,10 +19,19 @@ uint64_t read_pbm_file(FILE *fp)
     // decodes
     for(int i = 0; i < 64 && buffer[i]; i++) {
         if(buffer[i] == '1') {
+            printf("ø");
             pic |= 0x8000000000000000 >> i;
+        } else {
+            printf(".");
         }
+
+        if((i + 1) % 8 == 0) {
+            printf("\n");
+        }
+
     }
 
+    printf("\n");
     return pic;
 }
 
